@@ -46,6 +46,6 @@ module.exports = (env, argv) => {
             port: 9090,                              // Kept as is
         },
         cache: true,
-        devtool: devmode,
+        devtool: 'source-map',
     };
 };
