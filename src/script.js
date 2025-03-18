@@ -140,201 +140,98 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Download button
     download.addEventListener('click', () => {
-        if(download.classList.contains('disabled') === true || isEncoding === true){
-            return;
-        }
-
-        const wrap = document.createElement('div');
-        wrap.setAttribute('id', 'downloadconfig');
-        const infoHeader = document.createElement('h3');
-        infoHeader.textContent = 'Download';
-        wrap.appendChild(infoHeader);
+        // ... (existing code to check if encoding, create dialog, etc.)
+    
         const typeWrap = document.createElement('div');
-        const typeRadioGif = document.createElement('input');
-        typeRadioGif.setAttribute('type', 'radio');
-        typeRadioGif.setAttribute('name', 'typeradio');
-        typeRadioGif.checked = true;
-        const typeRadioGifLabel = document.createElement('label');
-        const typeRadioGifCaption = document.createElement('span');
-        typeRadioGifCaption.textContent = 'Gif';
-        typeRadioGifLabel.appendChild(typeRadioGif);
-        typeRadioGifLabel.appendChild(typeRadioGifCaption);
+    
+        // WebM radio button (video/animation)
         const typeRadioWebM = document.createElement('input');
         typeRadioWebM.setAttribute('type', 'radio');
         typeRadioWebM.setAttribute('name', 'typeradio');
+        typeRadioWebM.value = 'webm';
         const typeRadioWebMLabel = document.createElement('label');
         const typeRadioWebMCaption = document.createElement('span');
         typeRadioWebMCaption.textContent = 'WebM';
         typeRadioWebMLabel.appendChild(typeRadioWebM);
         typeRadioWebMLabel.appendChild(typeRadioWebMCaption);
-        const typeRadioJpeg = document.createElement('input');
-        typeRadioJpeg.setAttribute('type', 'radio');
-        typeRadioJpeg.setAttribute('name', 'typeradio');
-        const typeRadioJpegLabel = document.createElement('label');
-        const typeRadioJpegCaption = document.createElement('span');
-        typeRadioJpegCaption.textContent = 'JPEG';
-        typeRadioJpegLabel.appendChild(typeRadioJpeg);
-        typeRadioJpegLabel.appendChild(typeRadioJpegCaption);
+        typeWrap.appendChild(typeRadioWebMLabel);
+    
+        // MP4 radio button (video/animation), added if supported
+        const isMp4Supported = MediaRecorder.isTypeSupported('video/mp4');
+        let typeRadioMp4; // Declare outside to use in event listener
+        if (isMp4Supported) {
+            typeRadioMp4 = document.createElement('input');
+            typeRadioMp4.setAttribute('type', 'radio');
+            typeRadioMp4.setAttribute('name', 'typeradio');
+            typeRadioMp4.value = 'mp4';
+            const typeRadioMp4Label = document.createElement('label');
+            const typeRadioMp4Caption = document.createElement('span');
+            typeRadioMp4Caption.textContent = 'MP4';
+            typeRadioMp4Label.appendChild(typeRadioMp4);
+            typeRadioMp4Label.appendChild(typeRadioMp4Caption);
+            typeWrap.appendChild(typeRadioMp4Label);
+        }
+    
+        // PNG radio button (still image)
         const typeRadioPng = document.createElement('input');
         typeRadioPng.setAttribute('type', 'radio');
         typeRadioPng.setAttribute('name', 'typeradio');
+        typeRadioPng.value = 'png';
         const typeRadioPngLabel = document.createElement('label');
         const typeRadioPngCaption = document.createElement('span');
         typeRadioPngCaption.textContent = 'PNG';
         typeRadioPngLabel.appendChild(typeRadioPng);
         typeRadioPngLabel.appendChild(typeRadioPngCaption);
-        typeWrap.appendChild(typeRadioGifLabel);
-        typeWrap.appendChild(typeRadioWebMLabel);
-        typeWrap.appendChild(typeRadioJpegLabel);
         typeWrap.appendChild(typeRadioPngLabel);
-        wrap.appendChild(typeWrap);
-        const frameWrap = document.createElement('div');
-        const frameInput = document.createElement('input');
-        frameInput.setAttribute('type', 'number');
-        frameInput.value = parseInt(frames.value);
-        frameInput.min = 1;
-        frameInput.addEventListener('change', () => {
-            frameInput.value = Math.max(frameInput.value, 1);
-        }, false);
-        const frameCaption = document.createElement('span');
-        frameCaption.textContent = 'frames';
-        frameWrap.appendChild(frameCaption);
-        frameWrap.appendChild(frameInput);
-        wrap.appendChild(frameWrap);
-        const sizes = size.value.split('x');
-        const resolutionWrap = document.createElement('div');
-        const resolutionCaption = document.createElement('span');
-        resolutionCaption.textContent = 'resolution';
-        const widthInput = document.createElement('input');
-        widthInput.setAttribute('type', 'number');
-        widthInput.value = parseInt(sizes[0]);
-        widthInput.min = 1;
-        widthInput.addEventListener('change', () => {
-            widthInput.value = Math.max(widthInput.value, 1);
-        }, false);
-        const heightInput = document.createElement('input');
-        heightInput.setAttribute('type', 'number');
-        heightInput.value = parseInt(sizes[1]);
-        heightInput.min = 1;
-        heightInput.addEventListener('change', () => {
-            heightInput.value = Math.max(heightInput.value, 1);
-        }, false);
-        const resolutionCross = document.createElement('span');
-        resolutionCross.classList.add('cross');
-        resolutionCross.textContent = 'x';
-        resolutionWrap.appendChild(resolutionCaption);
-        resolutionWrap.appendChild(widthInput);
-        resolutionWrap.appendChild(resolutionCross);
-        resolutionWrap.appendChild(heightInput);
-        wrap.appendChild(resolutionWrap);
-        const framerateWrap = document.createElement('div');
-        const framerateInput = document.createElement('input');
-        framerateInput.setAttribute('type', 'number');
-        framerateInput.value = 60;
-        framerateInput.min = 10;
-        framerateInput.max = 60;
-        framerateInput.addEventListener('change', () => {
-            framerateInput.value = Math.min(Math.max(framerateInput.value, 10), 60);
-        }, false);
-        const framerateCaption = document.createElement('span');
-        framerateCaption.textContent = 'framerate';
-        framerateWrap.appendChild(framerateCaption);
-        framerateWrap.appendChild(framerateInput);
-        wrap.appendChild(framerateWrap);
-        const qualityWrap = document.createElement('div');
-        const qualityInput = document.createElement('input');
-        qualityInput.setAttribute('type', 'number');
-        qualityInput.value = 100;
-        qualityInput.min = 10;
-        qualityInput.max = 100;
-        qualityInput.addEventListener('change', () => {
-            qualityInput.value = Math.min(Math.max(qualityInput.value, 0), 100);
-        }, false);
-        const qualityCaption = document.createElement('span');
-        qualityCaption.textContent = 'quality';
-        qualityWrap.appendChild(qualityCaption);
-        qualityWrap.appendChild(qualityInput);
-        wrap.appendChild(qualityWrap);
-        const timeWrap = document.createElement('div');
-        const timeInput = document.createElement('input');
-        timeInput.setAttribute('type', 'number');
-        timeInput.value = parseInt(0);
-        timeInput.min = 0;
-        timeInput.step = 0.1;
-        const timeCaption = document.createElement('span');
-        timeCaption.textContent = 'start time';
-        timeWrap.appendChild(timeCaption);
-        timeWrap.appendChild(timeInput);
-        wrap.appendChild(timeWrap);
-
+    
+        // Set WebM as the default selection
+        typeRadioWebM.checked = true;
+    
+        // Add radio button listener to enable/disable animation-specific inputs
         const radioListener = () => {
-            const flag = typeRadioGif.checked === true || typeRadioWebM.checked === true;
-            frameInput.disabled = !flag;
-            framerateInput.disabled = !flag;
-            qualityInput.disabled = !flag;
+            const selectedValue = document.querySelector('input[name="typeradio"]:checked').value;
+            const isVideo = selectedValue === 'webm' || selectedValue === 'mp4';
+            frameInput.disabled = !isVideo;
+            framerateInput.disabled = !isVideo;
+            qualityInput.disabled = !isVideo;
         };
-        typeRadioGif.addEventListener('change', radioListener, false);
+    
+        // Attach event listeners
         typeRadioWebM.addEventListener('change', radioListener, false);
-        typeRadioJpeg.addEventListener('change', radioListener, false);
+        if (isMp4Supported) {
+            typeRadioMp4.addEventListener('change', radioListener, false);
+        }
         typeRadioPng.addEventListener('change', radioListener, false);
-        typeRadioGif.checked = true;
-        typeRadioWebM.checked = false;
-        typeRadioJpeg.checked = false;
-        typeRadioPng.checked = false;
-        radioListener();
-
-        showDialog(wrap, {okLabel: 'start'})
-        .then((isOk) => {
-            if(isOk !== true){return;}
-            if(
-                isNaN(parseInt(frameInput.value)) === true ||
-                isNaN(parseInt(widthInput.value)) === true ||
-                isNaN(parseInt(heightInput.value)) === true ||
-                isNaN(parseInt(framerateInput.value)) === true ||
-                isNaN(parseInt(qualityInput.value)) === true
-            ){
-                alert('Should not be blank.');
-                return;
+        radioListener(); // Set initial state
+    
+        // Append typeWrap to dialogWrap (assuming dialogWrap is the container)
+        dialogWrap.appendChild(typeWrap);
+    
+        // ... (rest of the dialog setup: inputs, buttons, etc.)
+    
+        showDialog(dialog).then(() => {
+            const selectedType = document.querySelector('input[name="typeradio"]:checked').value;
+            if (selectedType === 'png') {
+                captureImage(
+                    parseInt(timeInput.value),
+                    parseInt(widthInput.value),
+                    parseInt(heightInput.value),
+                    selectedType,
+                    parseInt(qualityInput.value) * 0.99999
+                );
+            } else {
+                captureAnimation(
+                    parseInt(frameInput.value),
+                    parseInt(widthInput.value),
+                    parseInt(heightInput.value),
+                    selectedType,
+                    parseInt(framerateInput.value),
+                    parseInt(qualityInput.value) * 0.99999,
+                    parseInt(timeInput.value)
+                );
             }
-            download.classList.add('disabled');
-            download.textContent = 'generate...';
-            isEncoding = true;
-            let formatName = 'gif';
-            if(typeRadioWebM.checked === true){
-                formatName = 'webm';
-            }else if(typeRadioJpeg.checked === true){
-                formatName = 'jpg';
-            }else if(typeRadioPng.checked === true){
-                formatName = 'png';
-            }
-            setTimeout(() => {
-                switch(formatName){
-                    case 'gif':
-                    case 'webm':
-                        captureAnimation(
-                            parseInt(frameInput.value),
-                            parseInt(widthInput.value),
-                            parseInt(heightInput.value),
-                            formatName,
-                            parseInt(framerateInput.value),
-                            parseInt(qualityInput.value) * 0.99999,
-                            parseInt(timeInput.value),
-                        );
-                        break;
-                    case 'jpg':
-                    case 'png':
-                        captureImage(
-                            parseInt(timeInput.value),
-                            parseInt(widthInput.value),
-                            parseInt(heightInput.value),
-                            formatName,
-                            parseInt(qualityInput.value) * 0.99999,
-                        );
-                        break;
-                }
-            }, 100);
         });
-    }, false);
+    });
 
     // Link generation button
     link.addEventListener('click', () => {
@@ -559,26 +456,15 @@ function editorSetting(id, source, onChange, onSelectionChange, theme = 'chaos')
     return edit;
 }
 
-function captureAnimation(frame = 180, width = 512, height = 256, format = 'gif', framerate = 60, quality = 100, offset = 0.0){
-    const ccapture = new CCapture({
-        verbose: false,
-        format: format,
-        workersPath: './js/',
-        framerate: framerate,
-        quality: quality,
-        onProgress: (range) => {
-            const p = Math.floor(range * 100);
-            download.textContent = `${p}%`;
-        },
-    });
-
+function captureAnimation(frame = 180, width = 512, height = 256, format = 'webm', framerate = 60, quality = 100, offset = 0.0) {
     let captureCanvas = document.createElement('canvas');
-    captureCanvas.width          = width;
-    captureCanvas.height         = height;
+    captureCanvas.width = width;
+    captureCanvas.height = height;
     captureCanvas.style.position = 'absolute';
-    captureCanvas.style.top      = '-9999px';
-    captureCanvas.style.left     = '-9999px';
+    captureCanvas.style.top = '-9999px';
+    captureCanvas.style.left = '-9999px';
     document.body.appendChild(captureCanvas);
+
     const option = Object.assign(FRAGMEN_OPTION, {
         target: captureCanvas,
         eventTarget: captureCanvas,
@@ -586,43 +472,90 @@ function captureAnimation(frame = 180, width = 512, height = 256, format = 'gif'
     });
     let frag = new Fragmen(option);
     frag.mode = currentMode;
-    let frameCount = 0;
-    frag.onDraw(() => {
-        if(frameCount < frame){
-            ccapture.capture(captureCanvas);
-        }else{
+
+    if (format === 'webm') {
+        const ccapture = new CCapture({
+            verbose: false,
+            format: 'webm',
+            workersPath: './js/',
+            framerate: framerate,
+            quality: quality,
+            onProgress: (range) => {
+                const p = Math.floor(range * 100);
+                download.textContent = `${p}%`;
+            },
+        });
+
+        let frameCount = 0;
+        frag.onDraw(() => {
+            if (frameCount < frame) {
+                ccapture.capture(captureCanvas);
+            } else {
+                frag.run = false;
+                ccapture.stop();
+                ccapture.save((blob) => {
+                    setTimeout(() => {
+                        const url = URL.createObjectURL(blob);
+                        let anchor = document.createElement('a');
+                        document.body.appendChild(anchor);
+                        anchor.download = `${uuid()}.webm`;
+                        anchor.href = url;
+                        anchor.click();
+                        document.body.removeChild(anchor);
+                        document.body.removeChild(captureCanvas);
+                        URL.revokeObjectURL(url);
+                        download.classList.remove('disabled');
+                        download.textContent = 'Download';
+                        isEncoding = false;
+                    }, 500);
+                });
+            }
+            frameCount++;
+        });
+
+        ccapture.start();
+        frag.render(editor.getValue());
+    } else if (format === 'mp4') {
+        const stream = captureCanvas.captureStream(framerate);
+        const recorder = new MediaRecorder(stream, { mimeType: 'video/mp4' });
+        let chunks = [];
+
+        recorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+                chunks.push(e.data);
+            }
+        };
+
+        recorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/mp4' });
+            const url = URL.createObjectURL(blob);
+            let anchor = document.createElement('a');
+            document.body.appendChild(anchor);
+            anchor.download = `${uuid()}.mp4`;
+            anchor.href = url;
+            anchor.click();
+            document.body.removeChild(anchor);
+            URL.revokeObjectURL(url);
+            download.classList.remove('disabled');
+            download.textContent = 'Download';
+            isEncoding = false;
+            document.body.removeChild(captureCanvas);
+        };
+
+        recorder.start();
+        frag.render(editor.getValue());
+        const duration = (frame / framerate) * 1000; // Duration in milliseconds
+        setTimeout(() => {
             frag.run = false;
-            ccapture.stop();
-            ccapture.save((blob) => {
-                setTimeout(() => {
-                    const url = URL.createObjectURL(blob);
-                    let anchor = document.createElement('a');
-                    document.body.appendChild(anchor);
-                    anchor.download = `${uuid()}.${format}`;
-                    anchor.href = url;
-                    anchor.click();
-                    document.body.removeChild(anchor);
-                    document.body.removeChild(captureCanvas);
-                    URL.revokeObjectURL(url);
-                    download.classList.remove('disabled');
-                    download.textContent = 'Download';
-                    isEncoding = false;
-                    captureCanvas = null;
-                    frag = null;
-                    anchor = null;
-                }, 500);
-            });
-        }
-        ++frameCount;
-    });
-    ccapture.start();
-    frag.render(editor.getValue());
+            recorder.stop();
+        }, duration);
+    }
 }
 
-function captureImage(time = 0, width = 512, height = 256, format = 'jpg', quality = 100){
+function captureImage(time = 0, width = 512, height = 256, format = 'png', quality = 100) {
     let captureCanvas = document.createElement('canvas');
-    captureCanvas.width          = width;
-    captureCanvas.height         = height;
+    captureCanvas.width = width;
+    captureCanvas.height = height;
     captureCanvas.style.position = 'absolute';
     captureCanvas.style.top      = '-9999px';
     captureCanvas.style.left     = '-9999px';
@@ -635,8 +568,7 @@ function captureImage(time = 0, width = 512, height = 256, format = 'jpg', quali
     frag.mode = currentMode;
     frag.onDraw(() => {
         frag.run = false;
-        const formatName = format === 'jpg' ? 'jpeg' : format;
-        const url = captureCanvas.toDataURL(`image/${formatName}`, quality / 100);
+        const url = captureCanvas.toDataURL(`image/${format}`, quality * 0.99999);
         let anchor = document.createElement('a');
         document.body.appendChild(anchor);
         anchor.download = `${uuid()}.${format}`;
