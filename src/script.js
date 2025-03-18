@@ -2,9 +2,6 @@
 import 'whatwg-fetch';
 import Promise from 'promise-polyfill';
 import {Fragmen} from './fragmen.js';
-import {Onomat} from './onomat.js';
-import {Musician} from './music.js';
-import {FireDB} from './firedb.js';
 import {registerCursorTimeout} from './registerCursorTimeout.js';
 
 import * as firebase from 'firebase/app';
