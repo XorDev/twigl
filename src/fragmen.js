@@ -142,84 +142,13 @@ uniform sampler2D b;
 ${declareO}void main(){vec2 p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-m;for(int i=0;i<8;++i){p.xy=abs(p)/dot(p,p)-vec2(.9+cos(t*.2)*.4);}o0=vec4(p.xxy,1);${o}}`;
         const geekerMRT = `void main(){vec2 p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-m;for(int i=0;i<8;++i){p.xy=abs(p)/dot(p,p)-vec2(.9+cos(t*.2)*.4);}o0=vec4(p.xxy,1);${o}}`;
         const geekestMRT = `vec2 p=(FC.xy*2.-r)/min(r.x,r.y)-m;for(int i=0;i<8;++i){p.xy=abs(p)/dot(p,p)-vec2(.9+cos(t*.2)*.4);}o0=vec4(p.xxy,1);${o}`;
-        return [classic, geek, geeker, geekest, classic300, geek300, geeker300, geekest300, classicMRT, geekMRT, geekerMRT, geekestMRT];
+        return [classic];
     }
     /**
      * GLSL ES 3.0 の場合に付与されるバージョンディレクティブ
      * @type {string}
      */
     static get ES_300_CHUNK(){return '#version 300 es\n';}
-    /**
-     * ギーカーモード時に先頭に付与されるフラグメントシェーダのコード
-     * @type {string}
-     */
-    static get GEEKER_CHUNK(){return 'precision highp float;uniform vec2 r;uniform vec2 m;uniform float t;uniform float f;uniform float s;uniform sampler2D b;\n';}
-    /**
-     * ギーカーモード + ES 3.0 の場合に付与される out 修飾子付き変数のコード
-     * @type {string}
-     */
-    static get GEEKER_OUT_CHUNK(){return 'out vec4 o;\n';}
-    /**
-     * ギーカーモード + MRT 時に先頭に付与されるフラグメントシェーダのコード
-     * @type {string}
-     */
-    static get GEEKER_MRT_CHUNK(){
-        const chunk = [];
-        for(let i = 0; i < Fragmen.MRT_TARGET_COUNT; ++i){
-            chunk.push(`uniform sampler2D b${i};`);
-        }
-        return `precision highp float;uniform vec2 r;uniform vec2 m;uniform float t;uniform float f;uniform float s;${chunk.join('')}\n`;
-    }
-    /**
-     * ギーカーモード + ES 3.0 + MRT の場合に付与される out 修飾子付き変数のコード
-     * @type {string}
-     */
-    static get GEEKER_OUT_MRT_CHUNK(){
-        const chunk = [];
-        for(let i = 0; i < Fragmen.MRT_TARGET_COUNT; ++i){
-            chunk.push(`layout (location = ${i}) out vec4 o${i};`);
-        }
-        return `${chunk.join('')}\n`;
-    }
-    /**
-     * ギーケストモード時に先頭に付与されるフラグメントシェーダのコード
-     * @type {string}
-     */
-    static get GEEKEST_CHUNK(){
-        return `#define FC gl_FragCoord
-precision highp float;uniform vec2 r;uniform vec2 m;uniform float t;uniform float f;uniform float s;uniform sampler2D b;
-${noise}\n`;
-    }
-    /**
-     * ギーケストモード + ES 3.0 の場合に付与される out 修飾子付き変数のコード
-     * @type {string}
-     */
-    static get GEEKEST_OUT_CHUNK(){return 'out vec4 o;\n';}
-    /**
-     * ギーケストモード + ES 3.0 + MRT の場合に先頭に付与されるフラグメントシェーダのコード
-     * @type {string}
-     */
-    static get GEEKEST_MRT_CHUNK(){
-        const chunk = [];
-        for(let i = 0; i < Fragmen.MRT_TARGET_COUNT; ++i){
-            chunk.push(`uniform sampler2D b${i};`);
-        }
-        return `#define FC gl_FragCoord
-precision highp float;uniform vec2 r;uniform vec2 m;uniform float t;uniform float f;uniform float s;${chunk.join('')}
-${noise}\n`;
-    }
-    /**
-     * ギーケストモード + ES 3.0 + MRT の場合に付与される layout out 修飾子付き変数のコード
-     * @type {string}
-     */
-    static get GEEKEST_OUT_MRT_CHUNK(){
-        const chunk = [];
-        for(let i = 0; i < Fragmen.MRT_TARGET_COUNT; ++i){
-            chunk.push(`layout (location = ${i}) out vec4 o${i};`);
-        }
-        return `${chunk.join('')}\n`;
-    }
-
     /**
      * constructor of fragmen.js
      * @param {object} option - オプション
@@ -616,24 +545,6 @@ void main(){
         for(let i = 0; i < Fragmen.MRT_TARGET_COUNT; ++i){mrtBuffers.push(`backbuffer${i}`);}
         let mrtShortBuffers = [];
         for(let i = 0; i < Fragmen.MRT_TARGET_COUNT; ++i){mrtShortBuffers.push(`b${i}`);}
-        if(
-            this.mode === Fragmen.MODE_GEEK ||
-            this.mode === Fragmen.MODE_GEEKER ||
-            this.mode === Fragmen.MODE_GEEKEST ||
-            this.mode === Fragmen.MODE_GEEK_300 ||
-            this.mode === Fragmen.MODE_GEEKER_300 ||
-            this.mode === Fragmen.MODE_GEEKEST_300 ||
-            this.mode === Fragmen.MODE_GEEK_MRT ||
-            this.mode === Fragmen.MODE_GEEKER_MRT ||
-            this.mode === Fragmen.MODE_GEEKEST_MRT
-        ){
-            resolution = 'r';
-            mouse      = 'm';
-            nowTime    = 't';
-            frame      = 'f';
-            sound      = 's';
-            backbuffer = 'b';
-        }
         if(this.program != null){this.gl.deleteProgram(this.program);}
         this.program = program;
         this.gl.useProgram(this.program);
@@ -647,13 +558,6 @@ void main(){
             case Fragmen.MODE_CLASSIC_MRT:
                 for(let i = 0; i < Fragmen.MRT_TARGET_COUNT; ++i){
                     this.uniLocation[`sampler${i}`] = this.gl.getUniformLocation(this.program, mrtBuffers[i]);
-                }
-                break;
-            case Fragmen.MODE_GEEK_MRT:
-            case Fragmen.MODE_GEEKER_MRT:
-            case Fragmen.MODE_GEEKEST_MRT:
-                for(let i = 0; i < Fragmen.MRT_TARGET_COUNT; ++i){
-                    this.uniLocation[`sampler${i}`] = this.gl.getUniformLocation(this.program, mrtShortBuffers[i]);
                 }
                 break;
             default:
@@ -971,13 +875,6 @@ void main(){
     preprocessVertexCode(source){
         switch(this.mode){
             case Fragmen.MODE_CLASSIC_300:
-            case Fragmen.MODE_GEEK_300:
-            case Fragmen.MODE_GEEKER_300:
-            case Fragmen.MODE_GEEKEST_300:
-            case Fragmen.MODE_CLASSIC_MRT:
-            case Fragmen.MODE_GEEK_MRT:
-            case Fragmen.MODE_GEEKER_MRT:
-            case Fragmen.MODE_GEEKEST_MRT:
                 return Fragmen.ES_300_CHUNK + source.replace(/attribute/g, 'in');
             default:
                 return source;
@@ -996,47 +893,6 @@ void main(){
         let chunkClose = ''
         switch(this.mode){
             case Fragmen.MODE_CLASSIC:
-            case Fragmen.MODE_GEEK:
-                break;
-            case Fragmen.MODE_GEEKER:
-                chunkOut = Fragmen.GEEKER_CHUNK;
-                break;
-            case Fragmen.MODE_GEEKEST:
-                chunkOut = Fragmen.GEEKEST_CHUNK;
-                if (code.match(/void\s+main\s*\(/) == null) {
-                    chunkMain = 'void main(){\n'
-                    chunkClose = '\n}'
-                }
-                break;
-            case Fragmen.MODE_CLASSIC_300:
-            case Fragmen.MODE_GEEK_300:
-            case Fragmen.MODE_CLASSIC_MRT:
-            case Fragmen.MODE_GEEK_MRT:
-                chunk300 = Fragmen.ES_300_CHUNK;
-                break;
-            case Fragmen.MODE_GEEKER_300:
-                chunk300 = Fragmen.ES_300_CHUNK;
-                chunkOut = Fragmen.GEEKER_CHUNK.substr(0, Fragmen.GEEKER_CHUNK.length - 1) + Fragmen.GEEKER_OUT_CHUNK;
-                break;
-            case Fragmen.MODE_GEEKER_MRT:
-                chunk300 = Fragmen.ES_300_CHUNK;
-                chunkOut = Fragmen.GEEKER_MRT_CHUNK.substr(0, Fragmen.GEEKER_MRT_CHUNK.length - 1) + Fragmen.GEEKER_OUT_MRT_CHUNK;
-                break;
-            case Fragmen.MODE_GEEKEST_300:
-                chunk300 = Fragmen.ES_300_CHUNK;
-                chunkOut = Fragmen.GEEKEST_CHUNK.substr(0, Fragmen.GEEKEST_CHUNK.length - 1) + Fragmen.GEEKEST_OUT_CHUNK;
-                if (code.match(/void\s+main\s*\(/) == null) {
-                    chunkMain = 'void main(){\n'
-                    chunkClose = '\n}'
-                }
-                break;
-            case Fragmen.MODE_GEEKEST_MRT:
-                chunk300 = Fragmen.ES_300_CHUNK;
-                chunkOut = Fragmen.GEEKEST_MRT_CHUNK.substr(0, Fragmen.GEEKEST_MRT_CHUNK.length - 1) + Fragmen.GEEKEST_OUT_MRT_CHUNK;
-                if (code.match(/void\s+main\s*\(/) == null) {
-                    chunkMain = 'void main(){\n'
-                    chunkClose = '\n}'
-                }
                 break;
             default:
                 throw new Error(`Invalid fragmen mode: ${this.mode} (it might be a string number?)`);
@@ -1056,32 +912,7 @@ void main(){
         let noiseDec = noise.split('\n').length;
         switch(this.mode){
             case Fragmen.MODE_CLASSIC:
-            case Fragmen.MODE_GEEK:
                 dec = 0;
-                break;
-            case Fragmen.MODE_GEEKER:
-                dec += 1;
-                break;
-            case Fragmen.MODE_GEEKEST:
-                dec += 3 + noiseDec - mainFunction;
-                break;
-            case Fragmen.MODE_CLASSIC_300:
-            case Fragmen.MODE_GEEK_300:
-            case Fragmen.MODE_CLASSIC_MRT:
-            case Fragmen.MODE_GEEK_MRT:
-                dec += 1;
-                break;
-            case Fragmen.MODE_GEEKER_300:
-                dec += 2;
-                break;
-            case Fragmen.MODE_GEEKER_MRT:
-                dec += 2;
-                break;
-            case Fragmen.MODE_GEEKEST_300:
-                dec += 4 + noiseDec - mainFunction;
-                break;
-            case Fragmen.MODE_GEEKEST_MRT:
-                dec += 4 + noiseDec - mainFunction;
                 break;
         }
         return message.replace(/^ERROR: (\d+):(\d+)/gm, (...args) => {
