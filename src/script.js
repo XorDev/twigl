@@ -97,7 +97,6 @@ window.addEventListener('DOMContentLoaded', () => {
     // Ace editor initialization
     let timeoutId = null;
     editor = editorSetting('editor', currentSource, (evt) => {
-        // Only perform if event attachment is not suppressed
         if(disableAttachEvent !== true){
           if(isEdit !== true){
               isEdit = true;
@@ -110,24 +109,21 @@ window.addEventListener('DOMContentLoaded', () => {
         }else{
           disableAttachEvent = false;
         }
-        // Cancel timer if within 1 second
         if(timeoutId != null){clearTimeout(timeoutId);}
         timeoutId = setTimeout(() => {
             timeoutId = null;
             update(editor.getValue());
         }, 1000);
-        // Output character count
         counter.textContent = `${editor.getValue().length}`;
     }, (evt) => {});
 
-    // When the window is resized
+    // Window resize
     window.addEventListener('resize', () => {
         resize();
     }, false);
-    // Perform resize processing once initially
     resize();
 
-    // Toggle for enabling/disabling animation
+    // Animation toggle
     animate.addEventListener('change', () => {
         if(animate.checked === true){
             if(fragmen != null){
@@ -144,10 +140,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Download button
     download.addEventListener('click', () => {
-        if(
-            download.classList.contains('disabled') === true ||
-            isEncoding === true
-        ){
+        if(download.classList.contains('disabled') === true || isEncoding === true){
             return;
         }
 
@@ -156,7 +149,6 @@ window.addEventListener('DOMContentLoaded', () => {
         const infoHeader = document.createElement('h3');
         infoHeader.textContent = 'Download';
         wrap.appendChild(infoHeader);
-        // Export type
         const typeWrap = document.createElement('div');
         const typeRadioGif = document.createElement('input');
         typeRadioGif.setAttribute('type', 'radio');
@@ -196,7 +188,6 @@ window.addEventListener('DOMContentLoaded', () => {
         typeWrap.appendChild(typeRadioJpegLabel);
         typeWrap.appendChild(typeRadioPngLabel);
         wrap.appendChild(typeWrap);
-        // Number of frames
         const frameWrap = document.createElement('div');
         const frameInput = document.createElement('input');
         frameInput.setAttribute('type', 'number');
@@ -210,7 +201,6 @@ window.addEventListener('DOMContentLoaded', () => {
         frameWrap.appendChild(frameCaption);
         frameWrap.appendChild(frameInput);
         wrap.appendChild(frameWrap);
-        // Resolution
         const sizes = size.value.split('x');
         const resolutionWrap = document.createElement('div');
         const resolutionCaption = document.createElement('span');
@@ -237,7 +227,6 @@ window.addEventListener('DOMContentLoaded', () => {
         resolutionWrap.appendChild(resolutionCross);
         resolutionWrap.appendChild(heightInput);
         wrap.appendChild(resolutionWrap);
-        // Framerate
         const framerateWrap = document.createElement('div');
         const framerateInput = document.createElement('input');
         framerateInput.setAttribute('type', 'number');
@@ -252,7 +241,6 @@ window.addEventListener('DOMContentLoaded', () => {
         framerateWrap.appendChild(framerateCaption);
         framerateWrap.appendChild(framerateInput);
         wrap.appendChild(framerateWrap);
-        // Quality
         const qualityWrap = document.createElement('div');
         const qualityInput = document.createElement('input');
         qualityInput.setAttribute('type', 'number');
@@ -267,7 +255,6 @@ window.addEventListener('DOMContentLoaded', () => {
         qualityWrap.appendChild(qualityCaption);
         qualityWrap.appendChild(qualityInput);
         wrap.appendChild(qualityWrap);
-        // Time specification
         const timeWrap = document.createElement('div');
         const timeInput = document.createElement('input');
         timeInput.setAttribute('type', 'number');
@@ -393,11 +380,8 @@ window.addEventListener('DOMContentLoaded', () => {
     fragmen.render(currentSource);
 
     window.addEventListener('keydown', (evt) => {
-        // Vim mode toggle
-        if(
-            ((evt.ctrlKey === true || evt.metaKey === true) && evt.altKey === true) &&
-            (evt.key === 'v' || evt.key === 'V' || evt.key === '√')
-        ){
+        if(((evt.ctrlKey === true || evt.metaKey === true) && evt.altKey === true) &&
+            (evt.key === 'v' || evt.key === 'V' || evt.key === '√')){
             vimMode = !vimMode;
             if(vimMode === true){
                 editor.setKeyboardHandler('ace/keyboard/vim');
@@ -405,16 +389,13 @@ window.addEventListener('DOMContentLoaded', () => {
                 editor.setKeyboardHandler(null);
             }
         }
-        // Toggle editor view
         if((evt.ctrlKey === true || evt.metaKey === true) && evt.altKey === true && (evt.key === '†' || evt.key === 't')){
             toggleEditorView();
         }
-        // Decrease editor font size
         if((evt.ctrlKey === true || evt.metaKey === true) && evt.altKey === true && (evt.key === '≤' || evt.key === ',')){
             --editorFontSize;
             document.querySelector('#editor').style.fontSize = `${editorFontSize}px`;
         }
-        // Increase editor font size
         if((evt.ctrlKey === true || evt.metaKey === true) && evt.altKey === true && (evt.key === '≥' || evt.key === '.')){
             ++editorFontSize;
             document.querySelector('#editor').style.fontSize = `${editorFontSize}px`;
@@ -423,21 +404,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Fullscreen listeners
     const onFullscreenChange = (evt) => {
-        if(
-            document.fullscreenElement == null &&
-            document.webkitFullscreenElement == null &&
-            document.msFullscreenElement == null
-        ){
+        if(document.fullscreenElement == null && document.webkitFullscreenElement == null && document.msFullscreenElement == null){
             exitFullscreenMode();
         }
     };
     const onFullscreenKeyDown = (evt) => {
         if(evt.altKey === true && evt.ctrlKey === true && (evt.key.toLowerCase() === 'f' || evt.key === 'ƒ')){
-            if(
-                document.fullscreenElement != null ||
-                document.webkitFullscreenElement != null ||
-                document.msFullscreenElement != null
-            ){
+            if(document.fullscreenElement != null || document.webkitFullscreenElement != null || document.msFullscreenElement != null){
                 exitFullscreen();
             }else{
                 requestFullscreenMode();
@@ -445,11 +418,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     };
     const onFullscreenRequest = () => {
-        if(
-            document.fullscreenElement == null &&
-            document.webkitFullscreenElement == null &&
-            document.msFullscreenElement == null
-        ){
+        if(document.fullscreenElement == null && document.webkitFullscreenElement == null && document.msFullscreenElement == null){
             requestFullscreenMode();
         }
     };
@@ -468,11 +437,10 @@ window.addEventListener('DOMContentLoaded', () => {
     // Information icon click
     infoIcon.addEventListener('click', () => {
         const wrap = document.createElement('div');
-
         const infoHeader = document.createElement('h3');
         infoHeader.textContent = 'Information';
         const infoCaption = document.createElement('div');
-        infoCaption.textContent = 'twigl.app is an online editor for One tweet shader with GIF generator.';
+        infoCaption.textContent = 'Rescreen is an online editor for one-tweet shaders with GIF or WebM generator.';
         wrap.appendChild(infoHeader);
         wrap.appendChild(infoCaption);
 
@@ -520,11 +488,7 @@ window.addEventListener('DOMContentLoaded', () => {
         wrap.appendChild(sourceHeader);
         wrap.appendChild(sourceCaption);
 
-        showDialog(wrap, {
-            okVisible: true,
-            cancelVisible: false,
-            okLabel: 'close',
-        });
+        showDialog(wrap, {okVisible: true, cancelVisible: false, okLabel: 'close'});
     }, false);
 
     // Hide menu icon click
@@ -542,14 +506,10 @@ window.addEventListener('DOMContentLoaded', () => {
         toggleEditorView();
     }, false);
 
-    // If menu and editor are hidden
     if(isLayerHidden === true){setLayerView(true);}
 
 }, false);
 
-/**
- * Processing on window resize
- */
 function resize(){
     const canvas = document.querySelector('#webgl');
     const bound = canvas.parentElement.getBoundingClientRect();
@@ -557,9 +517,6 @@ function resize(){
     canvas.height = bound.height;
 }
 
-/**
- * Change layer view
- */
 function setLayerView(value){
     if (value) {
         wrap.classList.add('hide');
@@ -571,9 +528,6 @@ function setLayerView(value){
     fragmen.rect();
 }
 
-/**
- * Toggle editor view
- */
 function toggleEditorView(){
     wrap.classList.toggle('overlay');
     editor.resize();
@@ -581,17 +535,11 @@ function toggleEditorView(){
     fragmen.rect();
 }
 
-/**
- * Update shader source
- */
 function update(source){
     if(fragmen == null){return;}
     fragmen.render(source);
 }
 
-/**
- * Ace editor settings
- */
 function editorSetting(id, source, onChange, onSelectionChange, theme = 'chaos'){
     const edit = ace.edit(id);
     edit.setTheme(`ace/theme/${theme}`);
@@ -611,9 +559,6 @@ function editorSetting(id, source, onChange, onSelectionChange, theme = 'chaos')
     return edit;
 }
 
-/**
- * Capture GIF or WebM
- */
 function captureAnimation(frame = 180, width = 512, height = 256, format = 'gif', framerate = 60, quality = 100, offset = 0.0){
     const ccapture = new CCapture({
         verbose: false,
@@ -674,9 +619,6 @@ function captureAnimation(frame = 180, width = 512, height = 256, format = 'gif'
     frag.render(editor.getValue());
 }
 
-/**
- * Capture a still image
- */
 function captureImage(time = 0, width = 512, height = 256, format = 'jpg', quality = 100){
     let captureCanvas = document.createElement('canvas');
     captureCanvas.width          = width;
@@ -712,16 +654,10 @@ function captureImage(time = 0, width = 512, height = 256, format = 'jpg', quali
     frag.render(editor.getValue(), time);
 }
 
-/**
- * Get searchParams
- */
 function getParameter(){
     return new URL(document.location).searchParams;
 }
 
-/**
- * Copy a string to the clipboard
- */
 function copyToClipboard(str){
     const t = document.createElement('textarea');
     t.value = str;
@@ -731,9 +667,6 @@ function copyToClipboard(str){
     document.body.removeChild(t);
 }
 
-/**
- * Generate a UUID
- */
 function uuid(){
     const chars = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.split('');
     for(let i = 0, j = chars.length; i < j; i++){
@@ -749,9 +682,6 @@ function uuid(){
     return chars.join('');
 }
 
-/**
- * Show custom dialog
- */
 function showDialog(message, option){
     const dialogOption = Object.assign({
         okLabel: 'ok',
@@ -815,16 +745,10 @@ function showDialog(message, option){
     });
 }
 
-/**
- * Hide dialog (and layer)
- */
 function hideDialog(){
     setLayerVisible(false);
 }
 
-/**
- * Set float layer visibility
- */
 function setLayerVisible(visible){
     if(visible === true){
         layer.classList.add('visible');
@@ -833,14 +757,8 @@ function setLayerVisible(visible){
     }
 }
 
-/**
- * Exit fullscreen
- */
 function exitFullscreen(){
-    if(
-        document.fullscreenEnabled !== true &&
-        document.webkitFullscreenEnabled !== true
-    ){
+    if(document.fullscreenEnabled !== true && document.webkitFullscreenEnabled !== true){
         return;
     }
     if(document.exitFullscreen != null){
@@ -850,9 +768,6 @@ function exitFullscreen(){
     }
 }
 
-/**
- * Perform DOM operations and resize editor area after exiting fullscreen
- */
 function exitFullscreenMode(){
     wrap.classList.remove('fullscreen');
     if (unregisterCursorTimeout != null) {
@@ -863,14 +778,8 @@ function exitFullscreenMode(){
     fragmen.rect();
 }
 
-/**
- * Enter fullscreen mode and resize editor area
- */
 function requestFullscreenMode(){
-    if(
-        document.fullscreenEnabled !== true &&
-        document.webkitFullscreenEnabled !== true
-    ){
+    if(document.fullscreenEnabled !== true && document.webkitFullscreenEnabled !== true){
         return;
     }
     if(document.body.requestFullscreen != null){
