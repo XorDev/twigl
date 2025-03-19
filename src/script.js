@@ -14,8 +14,7 @@ let message    = null; // Message DOM
 let animate    = null; // Toggle for animation
 let frames     = null; // Render frame select
 let size       = null; // Resolution select
-let render   = null; // Download button
-let link       = null; // Generate link button
+let render     = null; // Render button
 let layer      = null; // Dialog layer
 let dialog     = null; // Dialog message wrapper
 let infoIcon   = null; // Information icon
@@ -60,8 +59,7 @@ window.addEventListener('DOMContentLoaded', () => {
     animate    = document.querySelector('#pausetoggle');
     frames     = document.querySelector('#frameselect');
     size       = document.querySelector('#sizeselect');
-    render   = document.querySelector('#render');
-    link       = document.querySelector('#permanentlink');
+    render     = document.querySelector('#render');
     layer      = document.querySelector('#layer');
     dialog     = document.querySelector('#dialogmessage');
     infoIcon   = document.querySelector('#informationicon');
@@ -233,19 +231,6 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Link generation button
-    link.addEventListener('click', () => {
-        if(link.classList.contains('disabled') === true){return;}
-        link.classList.add('disabled');
-
-        const graphicsSource = editor.getValue();
-        const snapshotLink = `${BASE_URL}?source=${encodeURIComponent(graphicsSource)}`;
-
-        copyToClipboard(snapshotLink);
-        alert('Copied link to the clipboard!');
-        link.classList.remove('disabled');
-    }, false);
-
     // Main fragmen instance
     const option = Object.assign(FRAGMEN_OPTION, {
         target: canvas,
@@ -262,11 +247,9 @@ window.addEventListener('DOMContentLoaded', () => {
             case 'warn':
             case 'error':
                 render.classList.add('disabled');
-                link.classList.add('disabled');
                 break;
             default:
                 render.classList.remove('disabled');
-                link.classList.remove('disabled');
         }
     });
     counter.textContent = `${currentSource.length}`;
@@ -353,37 +336,6 @@ window.addEventListener('DOMContentLoaded', () => {
             e.textContent = v;
             modeCaption.appendChild(e);
         });
-        const modeInfoAnchorWrap = document.createElement('div');
-        const modeInfoAnchor = document.createElement('a');
-        modeInfoAnchor.setAttribute('href', 'https://github.com/doxas/twigl');
-        modeInfoAnchor.setAttribute('target', '_blank');
-        modeInfoAnchor.textContent = 'doxas/twigl - GitHub';
-        modeInfoAnchorWrap.appendChild(modeInfoAnchor);
-        modeCaption.appendChild(modeInfoAnchorWrap);
-        wrap.appendChild(modeHeader);
-        wrap.appendChild(modeCaption);
-
-        const authorHeader = document.createElement('h3');
-        authorHeader.textContent = 'Author';
-        const authorCaption = document.createElement('div');
-        const authorAnchor = document.createElement('a');
-        authorAnchor.textContent = 'doxas';
-        authorAnchor.setAttribute('href', 'https://twitter.com/h_doxas');
-        authorAnchor.setAttribute('target', '_blank');
-        authorCaption.appendChild(authorAnchor);
-        wrap.appendChild(authorHeader);
-        wrap.appendChild(authorCaption);
-
-        const sourceHeader = document.createElement('h3');
-        sourceHeader.textContent = 'Source Code';
-        const sourceCaption = document.createElement('div');
-        const sourceAnchor = document.createElement('a');
-        sourceAnchor.textContent = 'doxas/twigl';
-        sourceAnchor.setAttribute('href', 'https://github.com/doxas/twigl');
-        sourceAnchor.setAttribute('target', '_blank');
-        sourceCaption.appendChild(sourceAnchor);
-        wrap.appendChild(sourceHeader);
-        wrap.appendChild(sourceCaption);
 
         showDialog(wrap, {okVisible: true, cancelVisible: false, okLabel: 'close'});
     }, false);
