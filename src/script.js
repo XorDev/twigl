@@ -14,7 +14,7 @@ let message    = null; // Message DOM
 let animate    = null; // Toggle for animation
 let frames     = null; // Render frame select
 let size       = null; // Resolution select
-let download   = null; // Download button
+let render   = null; // Download button
 let link       = null; // Generate link button
 let layer      = null; // Dialog layer
 let dialog     = null; // Dialog message wrapper
@@ -60,7 +60,7 @@ window.addEventListener('DOMContentLoaded', () => {
     animate    = document.querySelector('#pausetoggle');
     frames     = document.querySelector('#frameselect');
     size       = document.querySelector('#sizeselect');
-    download   = document.querySelector('#downloadgif');
+    render   = document.querySelector('#render');
     link       = document.querySelector('#permanentlink');
     layer      = document.querySelector('#layer');
     dialog     = document.querySelector('#dialogmessage');
@@ -139,7 +139,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }, false);
 
     // Download button
-    download.addEventListener('click', () => {
+    render.addEventListener('click', () => {
         // ... (existing code to check if encoding, create dialog, etc.)
     
         const typeWrap = document.createElement('div');
@@ -261,11 +261,11 @@ window.addEventListener('DOMContentLoaded', () => {
         switch(status){
             case 'warn':
             case 'error':
-                download.classList.add('disabled');
+                render.classList.add('disabled');
                 link.classList.add('disabled');
                 break;
             default:
-                download.classList.remove('disabled');
+                render.classList.remove('disabled');
                 link.classList.remove('disabled');
         }
     });
@@ -482,7 +482,7 @@ function captureAnimation(frame = 180, width = 512, height = 256, format = 'webm
             quality: quality,
             onProgress: (range) => {
                 const p = Math.floor(range * 100);
-                download.textContent = `${p}%`;
+                render.textContent = `${p}%`;
             },
         });
 
@@ -498,14 +498,14 @@ function captureAnimation(frame = 180, width = 512, height = 256, format = 'webm
                         const url = URL.createObjectURL(blob);
                         let anchor = document.createElement('a');
                         document.body.appendChild(anchor);
-                        anchor.download = `${uuid()}.webm`;
+                        anchor.render = `${uuid()}.webm`;
                         anchor.href = url;
                         anchor.click();
                         document.body.removeChild(anchor);
                         document.body.removeChild(captureCanvas);
                         URL.revokeObjectURL(url);
-                        download.classList.remove('disabled');
-                        download.textContent = 'Download';
+                        render.classList.remove('disabled');
+                        render.textContent = 'Download';
                         isEncoding = false;
                     }, 500);
                 });
@@ -531,13 +531,13 @@ function captureAnimation(frame = 180, width = 512, height = 256, format = 'webm
             const url = URL.createObjectURL(blob);
             let anchor = document.createElement('a');
             document.body.appendChild(anchor);
-            anchor.download = `${uuid()}.mp4`;
+            anchor.render = `${uuid()}.mp4`;
             anchor.href = url;
             anchor.click();
             document.body.removeChild(anchor);
             URL.revokeObjectURL(url);
-            download.classList.remove('disabled');
-            download.textContent = 'Download';
+            render.classList.remove('disabled');
+            render.textContent = 'Download';
             isEncoding = false;
             document.body.removeChild(captureCanvas);
         };
@@ -571,13 +571,13 @@ function captureImage(time = 0, width = 512, height = 256, format = 'png', quali
         const url = captureCanvas.toDataURL(`image/${format}`, quality * 0.99999);
         let anchor = document.createElement('a');
         document.body.appendChild(anchor);
-        anchor.download = `${uuid()}.${format}`;
+        anchor.render = `${uuid()}.${format}`;
         anchor.href = url;
         anchor.click();
         document.body.removeChild(anchor);
         document.body.removeChild(captureCanvas);
-        download.classList.remove('disabled');
-        download.textContent = 'Download';
+        render.classList.remove('disabled');
+        render.textContent = 'Download';
         isEncoding = false;
         captureCanvas = null;
         frag = null;
